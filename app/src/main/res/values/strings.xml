@@ -3,4 +3,5 @@
     <string name="recipes_text">Recipes</string>
     <string name="favorite_recipes_text">Favorite</string>
     <string name="food_joke_text">Food Joke</string>
+    <string name="text_lorem">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the</string>
 </resources>

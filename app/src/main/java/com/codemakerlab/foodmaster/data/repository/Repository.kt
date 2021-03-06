@@ -9,6 +9,6 @@ class Repository @Inject constructor(
         private val remoteDataSource: RemoteDataSource
 ) {
 
-    val remote = remoteDataSource
+    val remote: RemoteDataSource = remoteDataSource
 
 }
