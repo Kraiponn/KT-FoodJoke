@@ -1,4 +1,4 @@
-package com.codemakerlab.foodmaster.ui.viewmodel
+package com.codemakerlab.foodmaster.ui.viewmodels
 
 import android.app.Application
 import android.content.Context
