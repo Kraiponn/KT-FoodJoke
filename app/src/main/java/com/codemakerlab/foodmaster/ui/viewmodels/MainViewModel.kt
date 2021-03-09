@@ -4,9 +4,8 @@ import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import com.codemakerlab.foodmaster.data.database.RecipesEntity
 import com.codemakerlab.foodmaster.data.models.FoodRecipe
 import com.codemakerlab.foodmaster.data.repository.Repository
 import com.codemakerlab.foodmaster.utils.NetworkResult
@@ -22,6 +21,16 @@ class MainViewModel @Inject constructor(
         application: Application
 ) : AndroidViewModel(application) {
 
+    /*** Room Database ***/
+    var readRecipes: LiveData<List<RecipesEntity>> = repository.local.readDatabase().asLiveData()
+
+    fun insertRecipes(recipesEntity: RecipesEntity): Job {
+        return viewModelScope.launch {
+            repository.local.insertRecipes(recipesEntity)
+        }
+    }
+
+    /*** Retrofit ***/
     var recipesResponse: MutableLiveData<NetworkResult<FoodRecipe>> = MutableLiveData()
 
     fun getRecipes(queries: Map<String, String>): Job = viewModelScope.launch {
@@ -35,6 +44,11 @@ class MainViewModel @Inject constructor(
             try {
                 val response = repository.remote.getRecipes(queries)
                 recipesResponse.value = handleFoodRecipesResponse(response)
+
+                val foodRecipe = recipesResponse.value!!.data
+                if(foodRecipe != null) {
+                    offLineCacheRecipes(foodRecipe)
+                }
             } catch (ex: Exception) {
                 recipesResponse.value =
                         NetworkResult.Error("Error occurred: ${ex.message.toString()}")
@@ -42,6 +56,11 @@ class MainViewModel @Inject constructor(
         } else {
             recipesResponse.value = NetworkResult.Error("No internet connection")
         }
+    }
+
+    private fun offLineCacheRecipes(foodRecipe: FoodRecipe) {
+        val recipesEntity = RecipesEntity(foodRecipe)
+        insertRecipes(recipesEntity)
     }
 
     private fun handleFoodRecipesResponse(response: Response<FoodRecipe>): NetworkResult<FoodRecipe>? {

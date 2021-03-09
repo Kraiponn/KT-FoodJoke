@@ -18,6 +18,7 @@ class RecipesRowBinding {
         fun loadImageFromUrl(imageView: ImageView, imageUrl: String) {
             imageView.load(imageUrl) {
                 crossfade(600)
+                        .error(R.drawable.ic_no_pic)
             }
         }
 
@@ -36,8 +37,8 @@ class RecipesRowBinding {
         @BindingAdapter("applyVeganColor")
         @JvmStatic
         fun applyVeganColor(view: View, vegan: Boolean) {
-            if(vegan) {
-                when(view) {
+            if (vegan) {
+                when (view) {
                     is TextView -> {
                         view.setTextColor(
                                 ContextCompat.getColor(
